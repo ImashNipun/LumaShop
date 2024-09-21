@@ -17,16 +17,15 @@ namespace LumaShopAPI.Entities
         public string Name { get; set; }
 
         [BsonElement("description")]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         [Required]
         [BsonElement("vendorId")]
-        [BsonRepresentation(BsonType.ObjectId)]
         public string VendorId { get; set; }
 
         [Required]
         [BsonElement("isActive")]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

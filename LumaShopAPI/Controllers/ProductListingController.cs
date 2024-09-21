@@ -1,5 +1,9 @@
-﻿using LumaShopAPI.DTOModals;
+﻿using Amazon.Runtime.Internal;
+using LumaShopAPI.DTOModals;
+using LumaShopAPI.DTOModals.Common;
+using LumaShopAPI.DTOModals.ProductListing;
 using LumaShopAPI.Entities;
+using LumaShopAPI.LumaShopEnum;
 using LumaShopAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,31 +15,65 @@ namespace LumaShopAPI.Controllers
     public class ProductListingController : Controller
     {
         private readonly ProductListingService _productListingService;
+        private readonly UserService _userService;
 
-        public ProductListingController(ProductListingService productListingService)
+        public ProductListingController(ProductListingService productListingService, UserService userService)
         {
             _productListingService = productListingService;
+            _userService = userService;
         }
 
         // Create a new ProductListing
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] ProductListingDTO productListingDto)
+        public async Task<IActionResult> Create([FromBody] CreateProductListingRquest request)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var productListing = new ProductListing
+            try
             {
-                Name = productListingDto.Name,
-                Description = productListingDto.Description,
-                VendorId = productListingDto.VendorId,
-                IsActive = productListingDto.IsActive,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            var createdProductListing = await _productListingService.CreateAsync(productListing);
-            return CreatedAtAction(nameof(GetById), new { id = createdProductListing.Id }, createdProductListing);
+                var vendorUser = await _userService.GetUserByIdAsync(request.VendorId);
+                if (vendorUser == null || vendorUser.Role != UserRoleEnum.VENDOR)
+                {
+                    return BadRequest(new APIResponse
+                    {
+                        Status = "error",
+                        Message = "Vendor not found or does not have the required role.",
+                        Data = null,
+                        Errors = new[] { "Invalid vendor ID." }
+                    });
+                }
+
+                var productListing = new ProductListing
+                {
+                    Name = request.Name,
+                    Description = request.Description,
+                    VendorId = request.VendorId,
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                var createdProductListing = await _productListingService.CreateAsync(productListing);
+                return CreatedAtAction(nameof(GetById), new { id = createdProductListing.Id }, new APIResponse
+                {
+                    Status = "success",
+                    Message = "Resource created successfully",
+                    Data = createdProductListing,
+                    Errors = null
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse
+                {
+                    Status = "error",
+                    Message = "An unexpected error occurred.",
+                    Data = null,
+                    Errors = new[] { ex.Message }
+                });
+            }
         }
 
         // Get all ProductListings
@@ -59,7 +97,7 @@ namespace LumaShopAPI.Controllers
 
         // Update a ProductListing by Id
         [HttpPatch("{id:length(24)}")]
-        public async Task<IActionResult> Update(string id, [FromBody] ProductListingDTO productListingDto)
+        public async Task<IActionResult> Update(string id, [FromBody] UpdateProductListingRquest productListingDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

@@ -70,6 +70,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddSingleton<MongodbService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ProductListingService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
