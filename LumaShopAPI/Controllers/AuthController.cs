@@ -21,11 +21,13 @@ namespace LumaShopAPI.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<UserRoles> _roleManager;
+        private readonly IConfiguration _configuration;
 
-        public AuthController(UserManager<User> userManager, RoleManager<UserRoles> roleManager)
+        public AuthController(UserManager<User> userManager, RoleManager<UserRoles> roleManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _configuration = configuration;
         }
 
         [HttpPost]
@@ -72,12 +74,32 @@ namespace LumaShopAPI.Controllers
 
                     };
                 }
+                string roleName = string.Empty;
+
+                switch (request.Role)
+                {
+                    case UserRoleEnum.VENDOR:
+                        roleName = "VENDOR";
+                        break;
+                    case UserRoleEnum.ADMIN:
+                        roleName = "ADMIN";
+                        break;
+                    case UserRoleEnum.CUSTOMER:
+                        roleName = "CUSTOMER";
+                        break;
+                    case UserRoleEnum.CSR:
+                        roleName = "CSR";
+                        break;
+                    default:
+                        roleName = "CUSTOMER";
+                        break;
+                }
                 var createUserResult = await _userManager.CreateAsync(userExists, request.Password);
                 if (!createUserResult.Succeeded) return new RegisterResponse { Message = $"Create user failed {createUserResult?.Errors?.First()?.Description}", Success = false };
                 //user is created...
                 //then add user to a role...
-                //var addUserToRoleResult = await _userManager.AddToRoleAsync(userExists, "USER");
-                //if (!addUserToRoleResult.Succeeded) return new RegisterResponse { Message = $"Create user succeeded but could not add user to role {addUserToRoleResult?.Errors?.First()?.Description}", Success = false };
+                var addUserToRoleResult = await _userManager.AddToRoleAsync(userExists, roleName);
+                if (!addUserToRoleResult.Succeeded) return new RegisterResponse { Message = $"Create user succeeded but could not add user to role {addUserToRoleResult?.Errors?.First()?.Description}", Success = false };
 
                 //all is still well..
                 return new RegisterResponse
@@ -128,7 +150,7 @@ namespace LumaShopAPI.Controllers
                 var roleClaims = roles.Select(x => new Claim(ClaimTypes.Role, x));
                 claims.AddRange(roleClaims);
 
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1swek3u4uo2u4a6ebigerlongersecurekey"));
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWTSigningKey"] ?? throw new ArgumentNullException("JWTSigningKey", "JWT signing key is not configured.")));
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
                 var expires = DateTime.Now.AddMinutes(30);
 
