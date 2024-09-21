@@ -29,7 +29,6 @@ namespace LumaShopAPI.Entities
 
         [Required]
         [BsonElement("vendorId")]
-        [BsonRepresentation(BsonType.ObjectId)]
         public string VendorId { get; set; }  // Required - Reference to the vendor (ObjectId)
 
         [BsonElement("isArchived")]
@@ -40,28 +39,28 @@ namespace LumaShopAPI.Entities
         public int StockQuantity { get; set; }  // Required - Quantity in stock (integer)
 
         [BsonElement("dimensions")]
-        public Dimensions Dimensions { get; set; }  // Optional - Dimensions of the furniture item (object)
+        public Dimensions? Dimensions { get; set; }  // Optional - Dimensions of the furniture item (object)
 
         [BsonElement("material")]
-        public string Material { get; set; } = string.Empty;  // Optional - Material of the furniture (string)
+        public string? Material { get; set; } = string.Empty;  // Optional - Material of the furniture (string)
 
         [BsonElement("colorOptions")]
-        public List<string> ColorOptions { get; set; }  // Optional - Available color options (list of strings)
+        public List<string>? ColorOptions { get; set; }  // Optional - Available color options (list of strings)
 
         [BsonElement("weight")]
-        public double Weight { get; set; }  // Optional - Weight of the furniture item (double)
+        public double? Weight { get; set; }  // Optional - Weight of the furniture item (double)
 
         [BsonElement("assemblyRequired")]
-        public bool AssemblyRequired { get; set; } = false;  // Optional - Default is false (boolean)
+        public bool? AssemblyRequired { get; set; } = false;  // Optional - Default is false (boolean)
 
         [BsonElement("productImages")]
-        public List<string> ProductImages { get; set; }  // Optional - URLs of product images (list of strings)
+        public List<string>? ProductImages { get; set; }  // Optional - URLs of product images (list of strings)
 
         [BsonElement("warrantyPeriod")]
         public int? WarrantyPeriod { get; set; }  // Optional - Warranty period in months (nullable integer)
 
         [BsonElement("isFeatured")]
-        public bool IsFeatured { get; set; } = false;  // Optional - Default is false (boolean)
+        public bool? IsFeatured { get; set; } = false;  // Optional - Default is false (boolean)
 
         [Required]
         [BsonElement("listingId")]
@@ -77,16 +76,14 @@ namespace LumaShopAPI.Entities
 
     public class Dimensions
     {
-        [Required]
+     
         [BsonElement("width")]
-        public double Width { get; set; }  // Required - Width (double)
+        public double? Width { get; set; }  // Required - Width (double)
 
-        [Required]
         [BsonElement("height")]
-        public double Height { get; set; }  // Required - Height (double)
+        public double? Height { get; set; }  // Required - Height (double)
 
-        [Required]
         [BsonElement("depth")]
-        public double Depth { get; set; }  // Required - Depth (double)
+        public double? Depth { get; set; }  // Required - Depth (double)
     }
 }
