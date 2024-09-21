@@ -44,5 +44,11 @@ namespace LumaShopAPI.Services
         {
             await _productListings.DeleteOneAsync(listing => listing.Id == id);
         }
+
+        public async Task<bool> IsListingActiveAsync(string id)
+        {
+            var listing = await _productListings.Find(listing => listing.Id == id).FirstOrDefaultAsync();
+            return listing?.IsActive ?? false;
+        }
     }
 }
