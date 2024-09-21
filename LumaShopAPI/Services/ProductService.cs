@@ -59,5 +59,26 @@ namespace LumaShopAPI.Services
             await _products.DeleteOneAsync(product => product.Id == id);
         }
 
+        public async Task<bool> DeductStockAsync(string productId, int quantity, IClientSessionHandle session)
+        {
+            var filter = Builders<Product>.Filter.Eq(p => p.Id, productId);
+            var update = Builders<Product>.Update.Inc(p => p.StockQuantity, -quantity);
+
+            var product = await _products.FindOneAndUpdateAsync(session, filter, update, new FindOneAndUpdateOptions<Product>
+            {
+                ReturnDocument = ReturnDocument.After
+            });
+
+            // Check if the product exists and has sufficient stock
+            if (product == null || product.StockQuantity < 0)
+            {
+                // Revert the stock update if it's invalid
+                await _products.FindOneAndUpdateAsync(session, filter, Builders<Product>.Update.Inc(p => p.StockQuantity, quantity));
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }
