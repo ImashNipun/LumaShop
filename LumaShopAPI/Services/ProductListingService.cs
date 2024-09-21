@@ -1,4 +1,5 @@
 ﻿using LumaShopAPI.Entities;
+using LumaShopAPI.Services.Database;
 using MongoDB.Driver;
 
 namespace LumaShopAPI.Services
@@ -7,9 +8,9 @@ namespace LumaShopAPI.Services
     {
         private readonly IMongoCollection<ProductListing> _productListings;
 
-        public ProductListingService(IMongoDatabase database)
+        public ProductListingService(MongodbService mongodbService)
         {
-            _productListings = database.GetCollection<ProductListing>("ProductListings");
+            _productListings = mongodbService.Database.GetCollection<ProductListing>("productListings");
         }
 
         // Create new ProductListing
