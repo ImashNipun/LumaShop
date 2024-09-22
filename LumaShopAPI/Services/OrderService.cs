@@ -1,6 +1,7 @@
 ﻿using LumaShopAPI.DTOModals.Order;
 using LumaShopAPI.Entities;
 using LumaShopAPI.LumaShopEnum;
+using LumaShopAPI.Services.Database;
 using MongoDB.Driver;
 
 namespace LumaShopAPI.Services
@@ -9,9 +10,9 @@ namespace LumaShopAPI.Services
     {
         private readonly IMongoCollection<Order> _orders;
 
-        public OrderService(IMongoDatabase database)
+        public OrderService(MongodbService mongodbService)
         {
-            _orders = database.GetCollection<Order>("orders");
+            _orders = mongodbService.Database.GetCollection<Order>("orders");
         }
 
         public async Task<Order> CreateOrderAsync(Order order)

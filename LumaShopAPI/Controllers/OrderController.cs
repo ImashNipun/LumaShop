@@ -9,6 +9,8 @@ using MongoDB.Driver;
 
 namespace LumaShopAPI.Controllers
 {
+    [ApiController]
+    [Route("order")]
     public class OrderController : Controller
     {
         private readonly OrderService _orderService;
