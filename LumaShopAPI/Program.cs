@@ -76,6 +76,8 @@ builder.Services.AddSingleton<MongodbService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ProductListingService>();
 builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<VendorRatingService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
