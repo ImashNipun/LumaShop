@@ -5,13 +5,15 @@ using LumaShopAPI.DTOModals.ProductListing;
 using LumaShopAPI.Entities;
 using LumaShopAPI.LumaShopEnum;
 using LumaShopAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LumaShopAPI.Controllers
 {
 
     [ApiController]
-    [Route("productLiating")]
+    [Route("productListing")]
+    [Authorize] 
     public class ProductListingController : Controller
     {
         private readonly ProductListingService _productListingService;
@@ -25,6 +27,7 @@ namespace LumaShopAPI.Controllers
 
         // Create a new ProductListing
         [HttpPost]
+        [Authorize(Roles = "ADMIN,VENDOR")]
         public async Task<IActionResult> Create([FromBody] CreateProductListingRquest request)
         {
             try
@@ -78,6 +81,7 @@ namespace LumaShopAPI.Controllers
 
         // Get all ProductListings
         [HttpGet]
+        [Authorize(Roles = "ADMIN,VENDOR")]
         public async Task<ActionResult<List<ProductListing>>> GetAll()
         {
             var productListings = await _productListingService.GetAllAsync();
@@ -97,6 +101,7 @@ namespace LumaShopAPI.Controllers
 
         // Update a ProductListing by Id
         [HttpPatch("{id:length(24)}")]
+        [Authorize(Roles = "ADMIN,VENDOR")]
         public async Task<IActionResult> Update(string id, [FromBody] UpdateProductListingRquest productListingDto)
         {
             if (!ModelState.IsValid)
@@ -126,6 +131,7 @@ namespace LumaShopAPI.Controllers
 
         // Delete a ProductListing by Id
         [HttpDelete("{id:length(24)}")]
+        [Authorize(Roles = "ADMIN,VENDOR")]
         public async Task<IActionResult> Delete(string id)
         {
             var productListing = await _productListingService.GetByIdAsync(id);

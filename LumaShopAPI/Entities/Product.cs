@@ -20,8 +20,7 @@ namespace LumaShopAPI.Entities
 
         [Required]
         [BsonElement("price")]
-        [BsonRepresentation(BsonType.Decimal128)]
-        public decimal Price { get; set; }  // Required - Price of the furniture (decimal)
+        public int Price { get; set; }  // Required - Price of the furniture (decimal)
 
         [Required]
         [BsonElement("category")]

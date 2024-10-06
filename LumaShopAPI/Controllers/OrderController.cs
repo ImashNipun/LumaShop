@@ -4,6 +4,7 @@ using LumaShopAPI.Entities;
 using LumaShopAPI.LumaShopEnum;
 using LumaShopAPI.Services;
 using LumaShopAPI.Services.Database;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 
@@ -11,6 +12,7 @@ namespace LumaShopAPI.Controllers
 {
     [ApiController]
     [Route("order")]
+    [Authorize]
     public class OrderController : Controller
     {
         private readonly OrderService _orderService;
@@ -25,6 +27,7 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "CUSTOMER,CSR")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
         {
             var mongoClient = new MongoClient(_mongodbService.Database.Client.Settings);
@@ -88,6 +91,7 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "CUSTOMER,CSR,ADMIN")]
         public async Task<IActionResult> UpdateOrder(string id, [FromBody] UpdateOrderRequest request)
         {
             try
@@ -127,6 +131,7 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "CUSTOMER,CSR,ADMIN")]
         public async Task<IActionResult> GetOrderById(string id)
         {
             try
@@ -164,6 +169,7 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "CUSTOMER,CSR,ADMIN")]
         public async Task<IActionResult> GetAllOrders()
         {
             try

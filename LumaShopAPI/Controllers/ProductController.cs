@@ -21,6 +21,7 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "CUSTOMER,CSR,ADMIN,VENDOR")]
         public async Task<ActionResult<List<Product>>> GetAll()
         {
             try
@@ -48,6 +49,7 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "CUSTOMER,CSR,ADMIN,VENDOR")]
         public async Task<ActionResult<Product>> GetById(string id)
         {
             try
@@ -86,6 +88,7 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "ADMIN,VENDOR")]
         public async Task<ActionResult> Create([FromBody] CreateProductRequest request)
         {
             try
@@ -137,6 +140,7 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "ADMIN,VENDOR")]
         public async Task<ActionResult> Update(string id, [FromBody] UpdateProductRequest request)
         {
             try
@@ -216,6 +220,7 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "ADMIN,VENDOR")]
         public async Task<ActionResult> Delete(string id)
         {
             try
