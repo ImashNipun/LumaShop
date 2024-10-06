@@ -26,7 +26,7 @@ namespace LumaShopAPI.Controllers
         }
 
         // Get a user by Id
-        [HttpGet("{id:length(24)}", Name = "GetUserById")]
+        [HttpGet("{id}", Name = "GetUserById")]
         public async Task<ActionResult<User>> GetUserById(string id)
         {
             var user = await _userService.GetUserByIdAsync(id);
@@ -38,7 +38,7 @@ namespace LumaShopAPI.Controllers
         }
 
         // Update an existing user
-        [HttpPatch("{id:length(24)}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> PatchUser(string id, [FromBody] UserUpdateRequest userUpdateRequest)
         {
             if (userUpdateRequest == null)
@@ -86,7 +86,7 @@ namespace LumaShopAPI.Controllers
 
 
         // Delete a user
-        [HttpDelete("{id:length(24)}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await _userService.GetUserByIdAsync(id);
