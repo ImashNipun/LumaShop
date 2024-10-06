@@ -2,12 +2,14 @@
 using LumaShopAPI.DTOModals.VendorRating;
 using LumaShopAPI.Entities;
 using LumaShopAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LumaShopAPI.Controllers
 {
     [ApiController]
     [Route("ratings")]
+    [Authorize]
     public class VendorRatingsController : Controller
     {
         private readonly VendorRatingService _vendorRatingService;
@@ -18,6 +20,7 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "CUSTOMER,CSR,ADMIN,VENDOR")]
         public async Task<ActionResult<List<VendorRatings>>> GetAll()
         {
             try
@@ -46,6 +49,7 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "CUSTOMER,CSR,ADMIN,VENDOR")]
         public async Task<ActionResult<VendorRatings>> GetById(string id)
         {
             try
@@ -83,6 +87,7 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "CUSTOMER,ADMIN")]
         public async Task<ActionResult<VendorRatings>> Create(CreateVendorRatingRequest request)
         {
             try
@@ -117,6 +122,7 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "CUSTOMER,ADMIN")]
         public async Task<IActionResult> Update(string id, UpdateVendorRatingRequest request)
         {
             try
@@ -166,6 +172,7 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "CUSTOMER,ADMIN")]
         public async Task<IActionResult> Delete(string id)
         {
             try

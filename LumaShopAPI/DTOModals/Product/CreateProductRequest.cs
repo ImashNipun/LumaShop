@@ -11,7 +11,7 @@ namespace LumaShopAPI.DTOModals.Product
         public string Description { get; set; }
 
         [Required]
-        public decimal Price { get; set; }
+        public int Price { get; set; }
 
         [Required]
         public string Category { get; set; }
