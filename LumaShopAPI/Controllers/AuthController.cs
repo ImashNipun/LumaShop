@@ -152,7 +152,7 @@ namespace LumaShopAPI.Controllers
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWTSigningKey"] ?? throw new ArgumentNullException("JWTSigningKey", "JWT signing key is not configured.")));
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                var expires = DateTime.Now.AddMinutes(30);
+                var expires = DateTime.Now.AddMinutes(1440);
 
                 var token = new JwtSecurityToken(
                     issuer: "https://localhost:5001",

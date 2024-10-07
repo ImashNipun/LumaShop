@@ -13,7 +13,7 @@ namespace LumaShopAPI.Controllers
 
     [ApiController]
     [Route("productListing")]
-    [Authorize] 
+    [Authorize]
     public class ProductListingController : Controller
     {
         private readonly ProductListingService _productListingService;
@@ -32,13 +32,11 @@ namespace LumaShopAPI.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
-                    return BadRequest(ModelState);
 
                 var vendorUser = await _userService.GetUserByIdAsync(request.VendorId);
                 if (vendorUser == null || vendorUser.Role != UserRoleEnum.VENDOR)
                 {
-                    return BadRequest(new APIResponse
+                    return StatusCode(400, new APIResponse
                     {
                         Status = "error",
                         Message = "Vendor not found or does not have the required role.",
@@ -84,19 +82,66 @@ namespace LumaShopAPI.Controllers
         [Authorize(Roles = "ADMIN,VENDOR")]
         public async Task<ActionResult<List<ProductListing>>> GetAll()
         {
-            var productListings = await _productListingService.GetAllAsync();
-            return Ok(productListings);
+            try
+            {
+                var productListings = await _productListingService.GetAllAsync();
+                return StatusCode(200, new APIResponse
+                {
+                    Status = "success",
+                    Message = "Resource fetched successfully",
+                    Data = productListings,
+                    Errors = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse
+                {
+                    Status = "error",
+                    Message = "An unexpected error occurred.",
+                    Data = null,
+                    Errors = new[] { ex.Message }
+                });
+            }
+            
         }
 
         // Get a ProductListing by Id
         [HttpGet("{id:length(24)}", Name = "GetById")]
         public async Task<ActionResult<ProductListing>> GetById(string id)
         {
-            var productListing = await _productListingService.GetByIdAsync(id);
-            if (productListing == null)
-                return NotFound();
+            try
+            {
+                var productListing = await _productListingService.GetByIdAsync(id);
+                if (productListing == null)
+                    return StatusCode(404, new APIResponse
+                    {
+                        Status = "error",
+                        Message = "Resource not found",
+                        Data = null,
+                        Errors = new[] { "Product listing not found." }
+                    });
+                    
+                return StatusCode(200, new APIResponse
+                {
+                    Status = "success",
+                    Message = "Resource fetched successfully",
+                    Data = productListing,
+                    Errors = null
+                });
 
-            return Ok(productListing);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse
+                {
+                    Status = "error",
+                    Message = "An unexpected error occurred.",
+                    Data = null,
+                    Errors = new[] { ex.Message }
+                });
+            }
+            
         }
 
         // Update a ProductListing by Id
@@ -104,29 +149,53 @@ namespace LumaShopAPI.Controllers
         [Authorize(Roles = "ADMIN,VENDOR")]
         public async Task<IActionResult> Update(string id, [FromBody] UpdateProductListingRquest productListingDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
+                var existingProductListing = await _productListingService.GetByIdAsync(id);
+                if (existingProductListing == null)
+                    return StatusCode(404, new APIResponse
+                    {
+                        Status = "error",
+                        Message = "Resource not found",
+                        Data = null,
+                        Errors = new[] { "Product listing not found." }
+                    });
 
-            var existingProductListing = await _productListingService.GetByIdAsync(id);
-            if (existingProductListing == null)
-                return NotFound();
+                if (productListingDto.Name != null)
+                    existingProductListing.Name = productListingDto.Name;
 
-            // Update only the fields that are provided in the DTO
-            if (productListingDto.Name != null)
-                existingProductListing.Name = productListingDto.Name;
+                if (productListingDto.Description != null)
+                    existingProductListing.Description = productListingDto.Description;
 
-            if (productListingDto.Description != null)
-                existingProductListing.Description = productListingDto.Description;
+                if (productListingDto.VendorId != null)
+                    existingProductListing.VendorId = productListingDto.VendorId;
 
-            if (productListingDto.VendorId != null)
-                existingProductListing.VendorId = productListingDto.VendorId;
+                existingProductListing.IsActive = productListingDto.IsActive;
 
-            existingProductListing.IsActive = productListingDto.IsActive;
+                existingProductListing.UpdatedAt = DateTime.UtcNow;
 
-            existingProductListing.UpdatedAt = DateTime.UtcNow;
+                await _productListingService.UpdateAsync(id, existingProductListing);
+                return StatusCode(200, new APIResponse
+                {
+                    Status = "success",
+                    Message = "Resource updated successfully",
+                    Data = null,
+                    Errors = null
+                });
+                
 
-            await _productListingService.UpdateAsync(id, existingProductListing);
-            return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse
+                {
+                    Status = "error",
+                    Message = "An unexpected error occurred.",
+                    Data = null,
+                    Errors = new[] { ex.Message }
+                });
+            }
+            
         }
 
         // Delete a ProductListing by Id
@@ -134,12 +203,40 @@ namespace LumaShopAPI.Controllers
         [Authorize(Roles = "ADMIN,VENDOR")]
         public async Task<IActionResult> Delete(string id)
         {
-            var productListing = await _productListingService.GetByIdAsync(id);
-            if (productListing == null)
-                return NotFound();
+            try
+            {
+                var productListing = await _productListingService.GetByIdAsync(id);
+                if (productListing == null)
+                    return StatusCode(404, new APIResponse
+                    {
+                        Status = "error",
+                        Message = "Resource not found",
+                        Data = null,
+                        Errors = new[] { "Product listing not found." }
+                    });
 
-            await _productListingService.DeleteAsync(id);
-            return NoContent();
+                await _productListingService.DeleteAsync(id);
+                return StatusCode(200, new APIResponse
+                {
+                    Status = "success",
+                    Message = "Resource deleted successfully",
+                    Data = null,
+                    Errors = null
+                });
+                
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse
+                {
+                    Status = "error",
+                    Message = "An unexpected error occurred.",
+                    Data = null,
+                    Errors = new[] { ex.Message }
+                });
+            }
+            
         }
     }
 }
