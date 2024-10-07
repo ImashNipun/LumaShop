@@ -57,7 +57,7 @@ namespace LumaShopAPI.Controllers
                     if (!isStockUpdated)
                     {
                         await session.AbortTransactionAsync();
-                        return BadRequest(new APIResponse
+                        return StatusCode(400, new APIResponse
                         {
                             Status = "error",
                             Message = $"Insufficient stock for product {item.ProductId}",
