@@ -1,4 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*
+ * <summery>
+ * This controller handles user authentication operations such as registration
+ * and login. It interacts with UserManager and RoleManager to manage user data 
+ * and generates JWT tokens for authenticated users.
+ * </summery>
+*/
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -23,6 +31,10 @@ namespace LumaShopAPI.Controllers
         private readonly RoleManager<UserRoles> _roleManager;
         private readonly IConfiguration _configuration;
 
+        /*
+         * Constructor for AuthController that initializes the user manager, role manager, and configuration settings.
+         * Accepts instances of UserManager, RoleManager, and IConfiguration as parameters to facilitate user and role management.
+         */
         public AuthController(UserManager<User> userManager, RoleManager<UserRoles> roleManager, IConfiguration configuration)
         {
             _userManager = userManager;
@@ -30,8 +42,14 @@ namespace LumaShopAPI.Controllers
             _configuration = configuration;
         }
 
+
+
         [HttpPost]
         [Route("register")]
+        /*
+         * Handles user registration by accepting a RegisterRequest,
+         * invoking the registration logic, and returning an HTTP response based on the outcome.
+        */
         public async Task<IActionResult> Register([FromBody] DTOModals.User.RegisterRequest request)
         {
             var result = await RegisterAsync(request);
@@ -40,6 +58,11 @@ namespace LumaShopAPI.Controllers
 
         }
 
+        /*
+         * This method registers a new user by checking if the user already exists,
+         * creating a new user, and assigning the user to a role.
+         * It returns a RegisterResponse object based on the outcome.
+        */
         private async Task<RegisterResponse> RegisterAsync(DTOModals.User.RegisterRequest request)
         {
             try
@@ -96,12 +119,9 @@ namespace LumaShopAPI.Controllers
                 }
                 var createUserResult = await _userManager.CreateAsync(userExists, request.Password);
                 if (!createUserResult.Succeeded) return new RegisterResponse { Message = $"Create user failed {createUserResult?.Errors?.First()?.Description}", Success = false };
-                //user is created...
-                //then add user to a role...
                 var addUserToRoleResult = await _userManager.AddToRoleAsync(userExists, roleName);
                 if (!addUserToRoleResult.Succeeded) return new RegisterResponse { Message = $"Create user succeeded but could not add user to role {addUserToRoleResult?.Errors?.First()?.Description}", Success = false };
 
-                //all is still well..
                 return new RegisterResponse
                 {
                     Success = true,
@@ -121,6 +141,11 @@ namespace LumaShopAPI.Controllers
         [HttpPost]
         [Route("login")]
         [ProducesResponseType((int)HttpStatusCode.OK, Type = typeof(LoginResponse))]
+
+        /*
+         * Handles user login by accepting a LoginRequest,
+         * invoking the login logic, and returning an HTTP response based on the outcome.
+        */
         public async Task<IActionResult> Login([FromBody] DTOModals.User.LoginRequest request)
         {
             var result = await LoginAsync(request);
@@ -130,6 +155,11 @@ namespace LumaShopAPI.Controllers
 
         }
 
+
+        /*
+         * This method logs in a user by checking if the user exists,
+         * generating a JWT token, and returning a LoginResponse object based on the outcome.
+        */
         private async Task<LoginResponse> LoginAsync(DTOModals.User.LoginRequest request)
         {
             try
@@ -137,6 +167,8 @@ namespace LumaShopAPI.Controllers
 
                 var user = await _userManager.FindByEmailAsync(request.Email);
                 if (user is null) return new LoginResponse { Message = "Invalid email/password", Success = false };
+                if (user.Status == UserStatusEnum.INACTIVE) return new LoginResponse { Message = "Your account is inactive. Please contact support for assistance.", Success = false };
+                if (user.Status == UserStatusEnum.PENDING) return new LoginResponse { Message = "Your account is pending activation. Please check your email for further instructions.", Success = false };
 
                 //all is well if ew reach here
                 var claims = new List<Claim>

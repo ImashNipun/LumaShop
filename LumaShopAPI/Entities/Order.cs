@@ -1,4 +1,9 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿/*
+ * Contains the definition of the Order and Item classes used for handling orders in the LumaShop API.
+ */
+
+
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 using LumaShopAPI.LumaShopEnum;
 

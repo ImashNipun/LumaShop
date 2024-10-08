@@ -1,4 +1,12 @@
-﻿using MongoDB.Bson;
+﻿/*
+ * This class represents a product listing in the LumaShop API. 
+ * It includes properties for storing details about the product Listing
+ * such as its ID, name, description, vendor ID, active status, 
+ * and timestamps for creation and last update.
+ */
+
+
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;

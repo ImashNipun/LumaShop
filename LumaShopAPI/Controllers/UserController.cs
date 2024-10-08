@@ -1,4 +1,9 @@
-﻿using LumaShopAPI.DTOModals.Common;
+﻿/*
+ *This class handles HTTP requests related to user management, including operations to get, update, and delete users.
+ *It provides endpoints for retrieving all users, a user by ID, updating user information, and deleting a user.
+ */
+
+using LumaShopAPI.DTOModals.Common;
 using LumaShopAPI.DTOModals.User;
 using LumaShopAPI.Entities;
 using LumaShopAPI.LumaShopEnum;
@@ -18,8 +23,14 @@ namespace LumaShopAPI.Controllers
             _userService = userService;
         }
 
-        // Get all users
+       
         [HttpGet]
+
+        /*
+         * This method retrieves a list of all users from the database and returns them in the response.
+         * It handles exceptions and returns appropriate status codes and messages.
+         */
+
         public async Task<ActionResult<List<User>>> GetAllUsers()
         {
             try
@@ -46,8 +57,13 @@ namespace LumaShopAPI.Controllers
 
         }
 
-        // Get a user by Id
+        
         [HttpGet("{id}", Name = "GetUserById")]
+
+        /*
+         * This method retrieves a user by their ID from the database and returns it in the response.
+         * It handles exceptions and returns appropriate status codes and messages.
+         */
         public async Task<ActionResult<User>> GetUserById(string id)
         {
             try
@@ -84,8 +100,13 @@ namespace LumaShopAPI.Controllers
             }
         }
 
-        // Update an existing user
+        
         [HttpPatch("{id}")]
+
+        /*
+         * This method updates a user's information based on the provided user ID and update request.
+         * It handles exceptions and returns appropriate status codes and messages.
+         */
         public async Task<IActionResult> PatchUser(string id, [FromBody] UserUpdateRequest userUpdateRequest)
         {
             try
@@ -114,7 +135,7 @@ namespace LumaShopAPI.Controllers
 
                 }
 
-                // Role-specific logic for handling updates
+                
                 if (user.Role == UserRoleEnum.VENDOR)
                 {
                     user.CompanyName = userUpdateRequest.CompanyName ?? user.CompanyName;
@@ -122,7 +143,7 @@ namespace LumaShopAPI.Controllers
                 }
                 else
                 {
-                    // For non-Vendor roles, only update FirstName and LastName
+                    
                     if (!string.IsNullOrWhiteSpace(userUpdateRequest.FirstName))
                     {
                         user.FirstName = userUpdateRequest.FirstName;
@@ -133,15 +154,14 @@ namespace LumaShopAPI.Controllers
                         user.LastName = userUpdateRequest.LastName;
                     }
 
-                    // Ensure CompanyName and Description are left as null for non-Vendor roles
                     user.CompanyName = null;
                     user.Description = null;
                 }
 
-                // Always allow Status update
+                
                 user.Status = userUpdateRequest.Status;
 
-                // Save the updated user
+               
                 await _userService.UpdateUserAsync(id, user);
                 return StatusCode(200, new APIResponse
                 {
@@ -166,8 +186,13 @@ namespace LumaShopAPI.Controllers
         }
 
 
-        // Delete a user
+        
         [HttpDelete("{id}")]
+
+        /*
+         * This method deletes a user based on the provided user ID.
+         * It handles exceptions and returns appropriate status codes and messages.
+         */
         public async Task<IActionResult> DeleteUser(string id)
         {
             try

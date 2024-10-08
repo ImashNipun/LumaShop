@@ -1,4 +1,10 @@
-﻿using LumaShopAPI.Entities;
+﻿/*
+ * This class provides methods to manage products in the LumaShop database,
+ * including retrieving, creating, updating, and deleting products,
+ * as well as managing stock levels.
+ */
+
+using LumaShopAPI.Entities;
 using LumaShopAPI.Services.Database;
 using MongoDB.Driver;
 
@@ -15,6 +21,7 @@ namespace LumaShopAPI.Services
             _productListingService = productListingService;
         }
 
+        // Get all products from the database
         public async Task<List<Product>> GetAllAsync()
         {
             var result = await _products.Find(product => true).ToListAsync();
@@ -31,6 +38,8 @@ namespace LumaShopAPI.Services
 
         }
 
+
+        // Get a product by its ID from the database
         public async Task<Product> GetByIdAsync(string id)
         {
             var result = await _products.Find(product => product.Id == id).FirstOrDefaultAsync();
@@ -42,23 +51,28 @@ namespace LumaShopAPI.Services
             return null;
         }
 
+
+        // Create a new product in the database
         public async Task<Product> CreateAsync(Product product)
         {
             await _products.InsertOneAsync(product);
             return product;
         }
 
+        // Update an existing product in the database
         public async Task UpdateAsync(string id, Product product)
         {
             product.UpdatedAt = DateTime.UtcNow;
             await _products.ReplaceOneAsync(listing => listing.Id == id, product);
         }
 
+        // Delete a product from the database
         public async Task DeleteAsync(string id)
         {
             await _products.DeleteOneAsync(product => product.Id == id);
         }
 
+        // Deduct stock quantity of a product by a specified amount
         public async Task<bool> DeductStockAsync(string productId, int quantity, IClientSessionHandle session)
         {
             var filter = Builders<Product>.Filter.Eq(p => p.Id, productId);
@@ -69,10 +83,9 @@ namespace LumaShopAPI.Services
                 ReturnDocument = ReturnDocument.After
             });
 
-            // Check if the product exists and has sufficient stock
+            
             if (product == null || product.StockQuantity < 0)
             {
-                // Revert the stock update if it's invalid
                 await _products.FindOneAndUpdateAsync(session, filter, Builders<Product>.Update.Inc(p => p.StockQuantity, quantity));
                 return false;
             }

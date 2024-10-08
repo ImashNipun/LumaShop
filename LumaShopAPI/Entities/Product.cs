@@ -1,4 +1,10 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿/*
+ * Containing various properties
+ * that describe the product, such as its name, description, price, 
+ * category, and other relevant details.
+ */
+
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 using System.ComponentModel.DataAnnotations;
 
@@ -8,81 +14,81 @@ namespace LumaShopAPI.Entities
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }  // Unique identifier for the product
+        public string Id { get; set; }
 
         [Required]
         [BsonElement("name")]
-        public string Name { get; set; }  // Required - Name of the furniture item (string)
+        public string Name { get; set; }
 
         [Required]
         [BsonElement("description")]
-        public string Description { get; set; }  // Required - Detailed description of the item (string)
+        public string Description { get; set; }
 
         [Required]
         [BsonElement("price")]
-        public int Price { get; set; }  // Required - Price of the furniture (decimal)
+        public int Price { get; set; }
 
         [Required]
         [BsonElement("category")]
-        public string Category { get; set; }  // Required - Furniture category (string)
+        public string Category { get; set; }
 
         [Required]
         [BsonElement("vendorId")]
-        public string VendorId { get; set; }  // Required - Reference to the vendor (ObjectId)
+        public string VendorId { get; set; }
 
         [BsonElement("isArchived")]
-        public bool IsArchived { get; set; } = false;  // Optional - Default is false (boolean)
+        public bool IsArchived { get; set; } = false;
 
         [Required]
         [BsonElement("stockQuantity")]
-        public int StockQuantity { get; set; }  // Required - Quantity in stock (integer)
+        public int StockQuantity { get; set; }
 
         [BsonElement("dimensions")]
-        public Dimensions? Dimensions { get; set; }  // Optional - Dimensions of the furniture item (object)
+        public Dimensions? Dimensions { get; set; }
 
         [BsonElement("material")]
-        public string? Material { get; set; } = string.Empty;  // Optional - Material of the furniture (string)
+        public string? Material { get; set; } = string.Empty;
 
         [BsonElement("colorOptions")]
-        public List<string>? ColorOptions { get; set; }  // Optional - Available color options (list of strings)
+        public List<string>? ColorOptions { get; set; }
 
         [BsonElement("weight")]
-        public double? Weight { get; set; }  // Optional - Weight of the furniture item (double)
+        public double? Weight { get; set; }
 
         [BsonElement("assemblyRequired")]
-        public bool? AssemblyRequired { get; set; } = false;  // Optional - Default is false (boolean)
+        public bool? AssemblyRequired { get; set; } = false;
 
         [BsonElement("productImages")]
-        public List<string>? ProductImages { get; set; }  // Optional - URLs of product images (list of strings)
+        public List<string>? ProductImages { get; set; }
 
         [BsonElement("warrantyPeriod")]
-        public int? WarrantyPeriod { get; set; }  // Optional - Warranty period in months (nullable integer)
+        public int? WarrantyPeriod { get; set; }
 
         [BsonElement("isFeatured")]
-        public bool? IsFeatured { get; set; } = false;  // Optional - Default is false (boolean)
+        public bool? IsFeatured { get; set; } = false;
 
         [Required]
         [BsonElement("listingId")]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string ListingId { get; set; }  // Required - Reference to the product listing it belongs to (ObjectId)
+        public string ListingId { get; set; }
 
         [BsonElement("createdAt")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;  // Auto-assigned - Timestamp (DateTime)
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [BsonElement("updatedAt")]
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;  // Auto-assigned - Timestamp (DateTime)
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 
     public class Dimensions
     {
      
         [BsonElement("width")]
-        public double? Width { get; set; }  // Required - Width (double)
+        public double? Width { get; set; }
 
         [BsonElement("height")]
-        public double? Height { get; set; }  // Required - Height (double)
+        public double? Height { get; set; }
 
         [BsonElement("depth")]
-        public double? Depth { get; set; }  // Required - Depth (double)
+        public double? Depth { get; set; }
     }
 }

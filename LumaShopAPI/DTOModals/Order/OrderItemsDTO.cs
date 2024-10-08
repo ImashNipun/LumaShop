@@ -1,4 +1,6 @@
-﻿namespace LumaShopAPI.DTOModals.Order
+﻿// This use to create  a order object for create order and update order request
+
+namespace LumaShopAPI.DTOModals.Order
 {
     public class OrderItemsDTO
     {

@@ -1,4 +1,6 @@
-﻿using LumaShopAPI.LumaShopEnum;
+﻿// This class is used to create a request for updating a user
+
+using LumaShopAPI.LumaShopEnum;
 using System.ComponentModel.DataAnnotations;
 
 namespace LumaShopAPI.DTOModals.User

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// This class is use to make a object for the request of updating product
+
+using System.ComponentModel.DataAnnotations;
 
 namespace LumaShopAPI.DTOModals.Product
 {

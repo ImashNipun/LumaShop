@@ -1,4 +1,11 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿/*
+ * This class represents a user entity within the LumaShop API.
+ * It inherits from MongoIdentityUser and defines additional 
+ * properties for user-specific information including first name, 
+ * last name, company name, description, role, and status.
+ */
+
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 using LumaShopAPI.LumaShopEnum;
 using AspNetCore.Identity.MongoDbCore.Models;
@@ -9,10 +16,10 @@ namespace LumaShopAPI.Entities
     {
 
         [BsonRequired, BsonElement("firstName")]
-        public string FirstName { get; set; } = string.Empty;  // Default to empty string if not set
+        public string FirstName { get; set; } = string.Empty; 
 
         [BsonRequired, BsonElement("lastName")]
-        public string LastName { get; set; } = string.Empty;   // Default to empty string if not set
+        public string LastName { get; set; } = string.Empty;
 
         [BsonElement("companyName")]
         public string? CompanyName { get; set; }
@@ -24,7 +31,7 @@ namespace LumaShopAPI.Entities
         public UserRoleEnum Role { get; set; }
 
         [BsonRequired, BsonElement("status"), BsonRepresentation(BsonType.Int32)]
-        public UserStatusEnum Status { get; set; } = UserStatusEnum.PENDING;   // Default to PENDING
+        public UserStatusEnum Status { get; set; } = UserStatusEnum.PENDING;
     }
 }
 
