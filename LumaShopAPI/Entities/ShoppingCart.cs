@@ -1,40 +1,32 @@
 ﻿/*
- * Contains the definition of the Order and Item classes used for handling orders in the LumaShop API.
+ * This file contains the definition of the ShoppingCart and CartItem 
+ * classes for the LumaShopAPI. The ShoppingCart class represents a user's shopping 
+ * cart and contains a list of items, customer ID, total amount, and timestamps 
+ * for creation and updates. The CartItem class represents individual items in the 
+ * shopping cart, including the product ID, quantity, and price.
  */
-
 
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
-using LumaShopAPI.LumaShopEnum;
+using System.ComponentModel.DataAnnotations;
 
 namespace LumaShopAPI.Entities
 {
-    public class Order
+    public class ShoppingCart
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         [BsonElement("id")]
-        public string Id { get; set; }
+        public string Id { get; set; } 
 
         [BsonElement("customerId")]
         [BsonRequired]
         public string CustomerId { get; set; }
+        public List<CartItem> Items { get; set; } = new List<CartItem>();
 
-        [BsonElement("items")]
-        [BsonRequired]
-        public List<Item> Items { get; set; }
-
+        [Required]
         [BsonElement("totalAmount")]
-        [BsonRequired]
-        public decimal TotalAmount { get; set; }
-
-        [BsonElement("status")]
-        [BsonRequired]
-        public OrderStatusEnum Status { get; set; } = OrderStatusEnum.PENDING;
-
-        [BsonElement("createdBy")]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string CreatedBy { get; set; }
+        public int TotalAmount { get; set; }
 
         [BsonElement("createdAt")]
         [BsonDateTimeOptions]
@@ -43,26 +35,21 @@ namespace LumaShopAPI.Entities
         [BsonElement("updatedAt")]
         [BsonDateTimeOptions]
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        [BsonElement("isArchive")]
-        [BsonDefaultValue(false)]
-        public bool IsArchive { get; set; } = false;
-
     }
 
-    public class Item
+    public class CartItem
     {
         [BsonRequired]
         [BsonElement("productId")]
         [BsonRepresentation(BsonType.ObjectId)]
         public string ProductId { get; set; }
 
-        [BsonRequired]
+        [Required]
         [BsonElement("quantity")]
         public int Quantity { get; set; }
 
-        [BsonRequired]
+        [Required]
         [BsonElement("price")]
-        public decimal Price { get; set; }
+        public int Price { get; set; }
     }
 }

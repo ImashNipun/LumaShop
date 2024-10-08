@@ -1,4 +1,6 @@
-﻿namespace LumaShopAPI.LumaShopEnum
+﻿// Defines enums representing user roles and statuses within the LumaShop API.
+
+namespace LumaShopAPI.LumaShopEnum
 {
     public enum UserRoleEnum
     {

@@ -1,4 +1,11 @@
-﻿using MongoDB.Driver;
+﻿/*
+ * Service class for interacting with MongoDB.
+ * Responsible for establishing a connection to the database
+ * using the configuration settings.
+ */
+
+
+using MongoDB.Driver;
 
 namespace LumaShopAPI.Services.Database
 {

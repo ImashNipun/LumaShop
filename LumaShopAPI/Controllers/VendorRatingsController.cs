@@ -1,13 +1,22 @@
-﻿using LumaShopAPI.DTOModals.Common;
+﻿/*
+ * This controller handles operations related to vendor ratings.
+ * It includes methods for fetching, creating, updating, and deleting vendor ratings.
+ * Access is restricted based on user roles, ensuring only authorized users can perform actions.
+ */
+
+
+using LumaShopAPI.DTOModals.Common;
 using LumaShopAPI.DTOModals.VendorRating;
 using LumaShopAPI.Entities;
 using LumaShopAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LumaShopAPI.Controllers
 {
     [ApiController]
     [Route("ratings")]
+    [Authorize]
     public class VendorRatingsController : Controller
     {
         private readonly VendorRatingService _vendorRatingService;
@@ -18,6 +27,12 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "CUSTOMER,CSR,ADMIN,VENDOR")]
+        /*
+         * This method retrieves a list of all vendor ratings from the database and returns them in the response.
+         * It handles exceptions and returns appropriate status codes and messages.
+         */
+      
         public async Task<ActionResult<List<VendorRatings>>> GetAll()
         {
             try
@@ -46,6 +61,13 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "CUSTOMER,CSR,ADMIN,VENDOR")]
+
+        /*
+         * This method retrieves a specific vendor rating by its ID from the database and returns it in the response.
+         * It handles exceptions and returns appropriate status codes and messages.
+         */
+
         public async Task<ActionResult<VendorRatings>> GetById(string id)
         {
             try
@@ -83,6 +105,12 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "CUSTOMER,ADMIN")]
+
+        /*
+         * This method creates a new vendor rating in the database and returns the newly created rating in the response.
+         * It handles exceptions and returns appropriate status codes and messages.
+         */
         public async Task<ActionResult<VendorRatings>> Create(CreateVendorRatingRequest request)
         {
             try
@@ -117,6 +145,13 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "CUSTOMER,ADMIN")]
+        
+        /*
+         * This method updates an existing vendor rating in the database and returns the updated rating in the response.
+         * It handles exceptions and returns appropriate status codes and messages.
+         */
+
         public async Task<IActionResult> Update(string id, UpdateVendorRatingRequest request)
         {
             try
@@ -166,6 +201,13 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "CUSTOMER,ADMIN")]
+
+        /*
+         * This method deletes a vendor rating from the database based on its ID and returns the status of the operation.
+         * It handles exceptions and returns appropriate status codes and messages.
+         */
+
         public async Task<IActionResult> Delete(string id)
         {
             try

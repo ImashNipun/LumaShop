@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// This class is use to make a object for the request of updating product
+
+using System.ComponentModel.DataAnnotations;
 
 namespace LumaShopAPI.DTOModals.Product
 {
@@ -8,7 +10,7 @@ namespace LumaShopAPI.DTOModals.Product
       
         public string Description { get; set; }
 
-        public decimal Price { get; set; }
+        public int Price { get; set; }
 
         public string Category { get; set; }
 

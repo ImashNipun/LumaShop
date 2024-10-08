@@ -1,9 +1,19 @@
-﻿using LumaShopAPI.DTOModals.Common;
+﻿/*
+ * <summary>
+ * This controller handles API requests related to order management, including 
+ * creating, updating, fetching, and retrieving all orders. It ensures proper 
+ * authorization for each action based on user roles.
+ * </summary>
+ */
+
+
+using LumaShopAPI.DTOModals.Common;
 using LumaShopAPI.DTOModals.Order;
 using LumaShopAPI.Entities;
 using LumaShopAPI.LumaShopEnum;
 using LumaShopAPI.Services;
 using LumaShopAPI.Services.Database;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 
@@ -11,6 +21,8 @@ namespace LumaShopAPI.Controllers
 {
     [ApiController]
     [Route("order")]
+    [Authorize]
+
     public class OrderController : Controller
     {
         private readonly OrderService _orderService;
@@ -25,6 +37,13 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "CUSTOMER,CSR")]
+
+       /*
+        * Creates a new order based on the provided CreateOrderRequest. 
+        * Validates stock availability before finalizing the order.
+        */
+
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
         {
             var mongoClient = new MongoClient(_mongodbService.Database.Client.Settings);
@@ -54,7 +73,7 @@ namespace LumaShopAPI.Controllers
                     if (!isStockUpdated)
                     {
                         await session.AbortTransactionAsync();
-                        return BadRequest(new APIResponse
+                        return StatusCode(400, new APIResponse
                         {
                             Status = "error",
                             Message = $"Insufficient stock for product {item.ProductId}",
@@ -64,7 +83,6 @@ namespace LumaShopAPI.Controllers
                     }
                 }
 
-                // Step 3: Commit the transaction if everything is successful
                 await session.CommitTransactionAsync();
 
                 return CreatedAtAction(nameof(GetOrderById), new { id = result.Id }, new APIResponse
@@ -88,6 +106,13 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "CUSTOMER,CSR,ADMIN")]
+
+        /*
+         * Updates the status of an existing order identified by its ID. 
+         * Returns a 404 status if the order is not found.
+         */
+
         public async Task<IActionResult> UpdateOrder(string id, [FromBody] UpdateOrderRequest request)
         {
             try
@@ -127,6 +152,12 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "CUSTOMER,CSR,ADMIN")]
+
+        /*
+         * Fetches an order based on the provided order ID. 
+         * Returns a 404 status if the order is not found.
+         */
         public async Task<IActionResult> GetOrderById(string id)
         {
             try
@@ -164,6 +195,11 @@ namespace LumaShopAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "CUSTOMER,CSR,ADMIN")]
+
+        /*
+         * Fetches all orders from the database.
+         */
         public async Task<IActionResult> GetAllOrders()
         {
             try

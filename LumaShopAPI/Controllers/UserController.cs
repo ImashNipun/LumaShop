@@ -1,4 +1,10 @@
-﻿using LumaShopAPI.DTOModals.User;
+﻿/*
+ *This class handles HTTP requests related to user management, including operations to get, update, and delete users.
+ *It provides endpoints for retrieving all users, a user by ID, updating user information, and deleting a user.
+ */
+
+using LumaShopAPI.DTOModals.Common;
+using LumaShopAPI.DTOModals.User;
 using LumaShopAPI.Entities;
 using LumaShopAPI.LumaShopEnum;
 using LumaShopAPI.Services;
@@ -17,86 +23,212 @@ namespace LumaShopAPI.Controllers
             _userService = userService;
         }
 
-        // Get all users
+       
         [HttpGet]
+
+        /*
+         * This method retrieves a list of all users from the database and returns them in the response.
+         * It handles exceptions and returns appropriate status codes and messages.
+         */
+
         public async Task<ActionResult<List<User>>> GetAllUsers()
         {
-            var users = await _userService.GetAllUsersAsync();
-            return Ok(users);
+            try
+            {
+                var users = await _userService.GetAllUsersAsync();
+                return StatusCode(200, new APIResponse
+                {
+                    Status = "success",
+                    Message = "Users retrieved successfully.",
+                    Data = users,
+                    Errors = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse
+                {
+                    Status = "error",
+                    Message = "An unexpected error occurred.",
+                    Data = null,
+                    Errors = new[] { ex.Message }
+                }); ;
+            }
+
         }
 
-        // Get a user by Id
-        [HttpGet("{id:length(24)}", Name = "GetUserById")]
+        
+        [HttpGet("{id}", Name = "GetUserById")]
+
+        /*
+         * This method retrieves a user by their ID from the database and returns it in the response.
+         * It handles exceptions and returns appropriate status codes and messages.
+         */
         public async Task<ActionResult<User>> GetUserById(string id)
         {
-            var user = await _userService.GetUserByIdAsync(id);
-            if (user == null)
+            try
             {
-                return NotFound();
+
+                var user = await _userService.GetUserByIdAsync(id);
+                if (user == null)
+                {
+                    return StatusCode(404, new APIResponse
+                    {
+                        Status = "error",
+                        Message = "Resource not found",
+                        Data = null,
+                        Errors = new[] { "User not found." }
+                    });
+                }
+                return StatusCode(200, new APIResponse
+                {
+                    Status = "success",
+                    Message = "User retrieved successfully.",
+                    Data = user,
+                    Errors = null
+                });
             }
-            return Ok(user);
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse
+                {
+                    Status = "error",
+                    Message = "An unexpected error occurred.",
+                    Data = null,
+                    Errors = new[] { ex.Message }
+                });
+            }
         }
 
-        // Update an existing user
-        [HttpPatch("{id:length(24)}")]
+        
+        [HttpPatch("{id}")]
+
+        /*
+         * This method updates a user's information based on the provided user ID and update request.
+         * It handles exceptions and returns appropriate status codes and messages.
+         */
         public async Task<IActionResult> PatchUser(string id, [FromBody] UserUpdateRequest userUpdateRequest)
         {
-            if (userUpdateRequest == null)
+            try
             {
-                return BadRequest("Invalid update request.");
-            }
-
-            var user = await _userService.GetUserByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            // Role-specific logic for handling updates
-            if (user.Role == UserRoleEnum.VENDOR)
-            {
-                user.CompanyName = userUpdateRequest.CompanyName ?? user.CompanyName;
-                user.Description = userUpdateRequest.Description ?? user.Description;
-            }
-            else
-            {
-                // For non-Vendor roles, only update FirstName and LastName
-                if (!string.IsNullOrWhiteSpace(userUpdateRequest.FirstName))
+                if (userUpdateRequest == null)
                 {
-                    user.FirstName = userUpdateRequest.FirstName;
+                    return StatusCode(400, new APIResponse
+                    {
+                        Status = "error",
+                        Message = "Invalid update request.",
+                        Data = null,
+                        Errors = new[] { "Invalid update request." }
+                    });
                 }
 
-                if (!string.IsNullOrWhiteSpace(userUpdateRequest.LastName))
+                var user = await _userService.GetUserByIdAsync(id);
+                if (user == null)
                 {
-                    user.LastName = userUpdateRequest.LastName;
+                    return StatusCode(404, new APIResponse
+                    {
+                        Status = "error",
+                        Message = "Resource not found",
+                        Data = null,
+                        Errors = new[] { "User not found." }
+                    });
+
                 }
 
-                // Ensure CompanyName and Description are left as null for non-Vendor roles
-                user.CompanyName = null;
-                user.Description = null;
+                
+                if (user.Role == UserRoleEnum.VENDOR)
+                {
+                    user.CompanyName = userUpdateRequest.CompanyName ?? user.CompanyName;
+                    user.Description = userUpdateRequest.Description ?? user.Description;
+                }
+                else
+                {
+                    
+                    if (!string.IsNullOrWhiteSpace(userUpdateRequest.FirstName))
+                    {
+                        user.FirstName = userUpdateRequest.FirstName;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(userUpdateRequest.LastName))
+                    {
+                        user.LastName = userUpdateRequest.LastName;
+                    }
+
+                    user.CompanyName = null;
+                    user.Description = null;
+                }
+
+                
+                user.Status = userUpdateRequest.Status;
+
+               
+                await _userService.UpdateUserAsync(id, user);
+                return StatusCode(200, new APIResponse
+                {
+                    Status = "success",
+                    Message = "User updated successfully.",
+                    Data = user,
+                    Errors = null
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse
+                {
+                    Status = "error",
+                    Message = "An unexpected error occurred.",
+                    Data = null,
+                    Errors = new[] { ex.Message }
+                });
             }
 
-            // Always allow Status update
-            user.Status = userUpdateRequest.Status;
-
-            // Save the updated user
-            await _userService.UpdateUserAsync(id, user);
-            return NoContent();
         }
 
 
-        // Delete a user
-        [HttpDelete("{id:length(24)}")]
+        
+        [HttpDelete("{id}")]
+
+        /*
+         * This method deletes a user based on the provided user ID.
+         * It handles exceptions and returns appropriate status codes and messages.
+         */
         public async Task<IActionResult> DeleteUser(string id)
         {
-            var user = await _userService.GetUserByIdAsync(id);
-            if (user == null)
+            try
             {
-                return NotFound();
+                var user = await _userService.GetUserByIdAsync(id);
+                if (user == null)
+                {
+                    return StatusCode(404, new APIResponse
+                    {
+                        Status = "error",
+                        Message = "Resource not found",
+                        Data = null,
+                        Errors = new[] { "User not found." }
+                    });
+                }
+
+                await _userService.DeleteUserAsync(id);
+                return StatusCode(200, new APIResponse
+                {
+                    Status = "success",
+                    Message = "User deleted successfully.",
+                    Data = null,
+                    Errors = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse
+                {
+                    Status = "error",
+                    Message = "An unexpected error occurred.",
+                    Data = null,
+                    Errors = new[] { ex.Message }
+                });
             }
 
-            await _userService.DeleteUserAsync(id);
-            return NoContent();  // Return NoContent status after successful delete
         }
     }
 }
