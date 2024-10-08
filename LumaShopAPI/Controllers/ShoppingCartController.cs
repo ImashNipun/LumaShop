@@ -1,4 +1,10 @@
-﻿using LumaShopAPI.DTOModals.Common;
+﻿/*
+ * This controller handles operations related to the shopping cart in the LumaShopAPI.
+ * It provides endpoints for creating, retrieving, updating, and deleting shopping cart entries.
+ * The controller ensures that only authorized customers can access its methods.
+ */
+
+using LumaShopAPI.DTOModals.Common;
 using LumaShopAPI.DTOModals.ShoppinCart;
 using LumaShopAPI.Entities;
 using LumaShopAPI.Services;
@@ -19,9 +25,11 @@ namespace LumaShopAPI.Controllers
             _shoppingCartService = shoppingCartService;
         }
 
-        // Create a new shopping cart
         [HttpPost]
         [Authorize(Roles = "CUSTOMER")]
+
+        // Creates a new shopping cart for a customer with the specified items and total amount.
+
         public async Task<IActionResult> CreateShoppingCart([FromBody] CreateShoppingCartRequest request)
         {
             try
@@ -60,9 +68,12 @@ namespace LumaShopAPI.Controllers
             }
         }
 
-        // Get shopping cart by ID
+        
         [HttpGet("{id}")]
         [Authorize(Roles = "CUSTOMER")]
+
+        // Retrieves a shopping cart by its unique identifier (ID) and returns the cart details.
+
         public async Task<IActionResult> GetShoppingCartById(string id)
         {
             try
@@ -98,9 +109,11 @@ namespace LumaShopAPI.Controllers
             }
         }
 
-        // Update shopping cart
+      
         [HttpPut("{id}")]
         [Authorize(Roles = "CUSTOMER")]
+
+        // Updates the shopping cart with the specified ID using the provided request data.
         public async Task<IActionResult> UpdateShoppingCart(string id, [FromBody] UpdateShoppingCartRequest request)
         {
             try
@@ -148,9 +161,12 @@ namespace LumaShopAPI.Controllers
             }
         }
 
-        // Delete shopping cart
+       
         [HttpDelete("{id}")]
         [Authorize(Roles = "CUSTOMER")]
+
+        // Deletes the shopping cart identified by its ID and returns the status of the operation.
+
         public async Task<IActionResult> DeleteShoppingCart(string id)
         {
             try

@@ -1,4 +1,11 @@
-﻿using MongoDB.Bson;
+﻿/*
+ * This class defines the structure for vendor ratings in the LumaShop API.
+ * It represents customer ratings for vendors, including the vendor ID, customer ID, rating,
+ * and any comments provided by the customer. The class uses MongoDB attributes to specify
+ * the mapping of its properties to the corresponding fields in the MongoDB database.
+ */
+
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 namespace LumaShopAPI.Entities

@@ -1,4 +1,12 @@
-﻿using LumaShopAPI.DTOModals.Common;
+﻿/*
+ * This controller manages product-related operations in the LumaShop API. It allows 
+ * authorized users to perform CRUD (Create, Read, Update, Delete) operations on 
+ * products. The controller interacts with the ProductService to handle business logic 
+ * and communicates with the MongoDB database to store and retrieve product data.
+ */
+
+
+using LumaShopAPI.DTOModals.Common;
 using LumaShopAPI.DTOModals.Product;
 using LumaShopAPI.Entities;
 using LumaShopAPI.Services;
@@ -22,6 +30,8 @@ namespace LumaShopAPI.Controllers
 
         [HttpGet]
         [Authorize(Roles = "CUSTOMER,CSR,ADMIN,VENDOR")]
+
+        //Asynchronously retrieves all products from the database and returns them in a response.
         public async Task<ActionResult<List<Product>>> GetAll()
         {
             try
@@ -50,6 +60,9 @@ namespace LumaShopAPI.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Roles = "CUSTOMER,CSR,ADMIN,VENDOR")]
+
+        // Asynchronously retrieves a single product by its ID. Returns 404 if the product is not found.
+
         public async Task<ActionResult<Product>> GetById(string id)
         {
             try
@@ -89,6 +102,8 @@ namespace LumaShopAPI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "ADMIN,VENDOR")]
+
+        // Asynchronously creates a new product based on the provided request data.
         public async Task<ActionResult> Create([FromBody] CreateProductRequest request)
         {
             try
@@ -141,6 +156,8 @@ namespace LumaShopAPI.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "ADMIN,VENDOR")]
+
+        // Asynchronously updates an existing product based on the provided request data.
         public async Task<ActionResult> Update(string id, [FromBody] UpdateProductRequest request)
         {
             try
@@ -221,6 +238,8 @@ namespace LumaShopAPI.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "ADMIN,VENDOR")]
+
+        // Asynchronously deletes a product based on the provided ID.
         public async Task<ActionResult> Delete(string id)
         {
             try

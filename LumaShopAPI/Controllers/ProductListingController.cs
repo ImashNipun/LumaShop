@@ -1,4 +1,10 @@
-﻿using Amazon.Runtime.Internal;
+﻿/*
+ * This controller manages the operations related to product listings, 
+ * including creating, retrieving, updating, and deleting product listings.
+ * It is secured for authorized users with ADMIN and VENDOR roles.
+ */
+
+using Amazon.Runtime.Internal;
 using LumaShopAPI.DTOModals;
 using LumaShopAPI.DTOModals.Common;
 using LumaShopAPI.DTOModals.ProductListing;
@@ -25,9 +31,14 @@ namespace LumaShopAPI.Controllers
             _userService = userService;
         }
 
-        // Create a new ProductListing
+        
         [HttpPost]
         [Authorize(Roles = "ADMIN,VENDOR")]
+
+        /*Create a new ProductListing. This method validates the vendor ID and 
+         * creates a product listing if the vendor exists and has the correct role.
+         */
+
         public async Task<IActionResult> Create([FromBody] CreateProductListingRquest request)
         {
             try
@@ -77,9 +88,14 @@ namespace LumaShopAPI.Controllers
             }
         }
 
-        // Get all ProductListings
         [HttpGet]
         [Authorize(Roles = "ADMIN,VENDOR")]
+
+        /*
+         * Retrieve all ProductListings. This method fetches all product listings 
+         * and returns them in the response.
+         */
+            
         public async Task<ActionResult<List<ProductListing>>> GetAll()
         {
             try
@@ -106,8 +122,12 @@ namespace LumaShopAPI.Controllers
             
         }
 
-        // Get a ProductListing by Id
         [HttpGet("{id:length(24)}", Name = "GetById")]
+
+        /*
+         * Retrieve a ProductListing by Id. This method fetches a product listing 
+         * by its ID and returns it in the response.
+         */
         public async Task<ActionResult<ProductListing>> GetById(string id)
         {
             try
@@ -144,9 +164,13 @@ namespace LumaShopAPI.Controllers
             
         }
 
-        // Update a ProductListing by Id
         [HttpPatch("{id:length(24)}")]
         [Authorize(Roles = "ADMIN,VENDOR")]
+
+        /*
+         * Update a ProductListing by Id. This method updates a product listing 
+         * based on the provided ID and request body.
+         */
         public async Task<IActionResult> Update(string id, [FromBody] UpdateProductListingRquest productListingDto)
         {
             try
@@ -198,9 +222,13 @@ namespace LumaShopAPI.Controllers
             
         }
 
-        // Delete a ProductListing by Id
         [HttpDelete("{id:length(24)}")]
         [Authorize(Roles = "ADMIN,VENDOR")]
+
+        /*
+         * Delete a ProductListing by Id. This method deletes a product listing 
+         * based on the provided ID.
+         */
         public async Task<IActionResult> Delete(string id)
         {
             try

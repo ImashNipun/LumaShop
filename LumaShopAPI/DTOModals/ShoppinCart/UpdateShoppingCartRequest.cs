@@ -1,25 +1,27 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// This class is used to create a request for updating a shopping cart
+
+using System.ComponentModel.DataAnnotations;
 
 namespace LumaShopAPI.DTOModals.ShoppinCart
 {
     public class UpdateShoppingCartRequest
     {
         [Required]
-        public List<UpdateCartItemRequest> Items { get; set; } // Updated list of items in the cart
+        public List<UpdateCartItemRequest> Items { get; set; }
 
         [Required]
-        public int TotalAmount { get; set; } // Updated total cost of items in the cart
+        public int TotalAmount { get; set; }
     }
 
     public class UpdateCartItemRequest
     {
         [Required]
-        public string ProductId { get; set; } // ID of the product
+        public string ProductId { get; set; }
 
         [Required]
-        public int Quantity { get; set; } // Updated quantity of the product
+        public int Quantity { get; set; }
 
         [Required]
-        public int Price { get; set; } // Updated price of one unit of the product
+        public int Price { get; set; }
     }
 }

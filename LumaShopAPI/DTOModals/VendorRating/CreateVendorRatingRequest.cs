@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// This class is use to create a request for creating a vendor rating
+
+using System.ComponentModel.DataAnnotations;
 
 namespace LumaShopAPI.DTOModals.VendorRating
 {

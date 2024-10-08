@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// This class is used to create a request for logging in a user
+
+using System.ComponentModel.DataAnnotations;
 
 namespace LumaShopAPI.DTOModals.User
 {
