@@ -18,11 +18,9 @@ namespace LumaShopAPI.Entities
         public string Id { get; set; }
 
         [BsonElement("vendorId")]
-        [BsonRepresentation(BsonType.ObjectId)]
         public string VendorId { get; set; }
 
         [BsonElement("customerId")]
-        [BsonRepresentation(BsonType.ObjectId)]
         public string CustomerId { get; set; }
 
         [BsonElement("rating")]
