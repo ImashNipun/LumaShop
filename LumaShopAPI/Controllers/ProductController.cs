@@ -277,5 +277,66 @@ namespace LumaShopAPI.Controllers
             }
 
         }
+
+
+        [HttpGet("ByVendorId/{vendorId}")]
+        [Authorize(Roles = "ADMIN,VENDOR")]
+
+        //Asynchronously retrieves all vendor specific products from the database and returns them in a response.
+        public async Task<ActionResult<List<Product>>> GetAllProductsByVendorId(string vendorId)
+        {
+            try
+            {
+                var result = await _productService.GetAllProductsByVendorIdAsync(vendorId);
+                return StatusCode(200, new APIResponse
+                {
+                    Status = "success",
+                    Message = "Producst fetched successfully",
+                    Data = result,
+                    Errors = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse
+                {
+                    Status = "error",
+                    Message = "An unexpected error occurred.",
+                    Data = null,
+                    Errors = new[] { ex.Message }
+                });
+            }
+
+        }
+
+        [HttpGet("GetAllProducts")]
+        [Authorize(Roles = "ADMIN,VENDOR")]
+
+        //Asynchronously retrieves all products from the database and returns them in a response.
+        public async Task<ActionResult<List<Product>>> GetAllProducts()
+        {
+            try
+            {
+                var result = await _productService.GetAllProductAsync();
+                return StatusCode(200, new APIResponse
+                {
+                    Status = "success",
+                    Message = "Producst fetched successfully",
+                    Data = result,
+                    Errors = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse
+                {
+                    Status = "error",
+                    Message = "An unexpected error occurred.",
+                    Data = null,
+                    Errors = new[] { ex.Message }
+                });
+            }
+
+        }
     }
 }

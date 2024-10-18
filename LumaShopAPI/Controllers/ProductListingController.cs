@@ -61,7 +61,7 @@ namespace LumaShopAPI.Controllers
                     Name = request.Name,
                     Description = request.Description,
                     VendorId = request.VendorId,
-                    IsActive = true,
+                    IsActive = false,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
@@ -266,5 +266,49 @@ namespace LumaShopAPI.Controllers
             }
             
         }
+
+        [HttpGet("GetByVendorId/{vendorId}")]
+        [Authorize(Roles = "ADMIN,VENDOR")]
+
+        /*
+         * Retrieve a ProductListing by Vendor Id. This method fetches a product listing 
+         * by its Vendor ID and returns it in the response.
+         */
+        public async Task<ActionResult<ProductListing>> GetListingsByVendorId(string vendorId)
+        {
+            try
+            {
+                var productListing = await _productListingService.GetAllListingByVendorIdAsync(vendorId);
+                if (productListing == null)
+                    return StatusCode(404, new APIResponse
+                    {
+                        Status = "error",
+                        Message = "Resource not found",
+                        Data = null,
+                        Errors = new[] { "Product listing not found." }
+                    });
+
+                return StatusCode(200, new APIResponse
+                {
+                    Status = "success",
+                    Message = "Resource fetched successfully",
+                    Data = productListing,
+                    Errors = null
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse
+                {
+                    Status = "error",
+                    Message = "An unexpected error occurred.",
+                    Data = null,
+                    Errors = new[] { ex.Message }
+                });
+            }
+
+        }
+
     }
 }
