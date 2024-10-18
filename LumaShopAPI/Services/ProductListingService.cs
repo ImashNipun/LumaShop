@@ -56,5 +56,10 @@ namespace LumaShopAPI.Services
             var listing = await _productListings.Find(listing => listing.Id == id).FirstOrDefaultAsync();
             return listing?.IsActive ?? false;
         }
+
+        public async Task<List<ProductListing>> GetAllListingByVendorIdAsync(string vedorId)
+        {
+            return await _productListings.Find(listing => listing.VendorId == vedorId).ToListAsync();
+        }
     }
 }
