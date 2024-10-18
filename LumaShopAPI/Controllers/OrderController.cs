@@ -8,6 +8,7 @@
 
 
 using LumaShopAPI.DTOModals.Common;
+using LumaShopAPI.DTOModals.Notification;
 using LumaShopAPI.DTOModals.Order;
 using LumaShopAPI.Entities;
 using LumaShopAPI.LumaShopEnum;
@@ -28,31 +29,43 @@ namespace LumaShopAPI.Controllers
         private readonly OrderService _orderService;
         private readonly MongodbService _mongodbService;
         private readonly ProductService _productService;
+        private readonly NotificationService _notificationService;
+        private readonly UserService _userService;
 
-        public OrderController(OrderService orderService, MongodbService mongodbService, ProductService productService)
+        public OrderController(OrderService orderService, MongodbService mongodbService, ProductService productService, NotificationService notificationService, UserService userService)
         {
             _orderService = orderService;
             _mongodbService = mongodbService;
             _productService = productService;
+            _notificationService = notificationService;
+            _userService = userService;
         }
 
         [HttpPost]
         [Authorize(Roles = "CUSTOMER,CSR")]
 
-       /*
-        * Creates a new order based on the provided CreateOrderRequest. 
-        * Validates stock availability before finalizing the order.
-        */
+        /*
+         * Creates a new order based on the provided CreateOrderRequest. 
+         * Validates stock availability before finalizing the order.
+         */
 
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
         {
-            var mongoClient = new MongoClient(_mongodbService.Database.Client.Settings);
-
-            using var session = await mongoClient.StartSessionAsync();
-            session.StartTransaction();
-
             try
             {
+                var customer = await _userService.GetUserByIdAsync(request.CustomerId);
+
+                if (customer == null)
+                {
+                    return StatusCode(404, new APIResponse
+                    {
+                        Status = "error",
+                        Message = "Customer not found!",
+                        Data = null,
+                        Errors = null
+                    });
+                }
+
                 var order = new Order
                 {
                     CustomerId = request.CustomerId,
@@ -67,12 +80,12 @@ namespace LumaShopAPI.Controllers
                 };
 
                 var result = await _orderService.CreateOrderAsync(order);
+
                 foreach (var item in request.Items)
                 {
-                    var isStockUpdated = await _productService.DeductStockAsync(item.ProductId, item.Quantity, session);
+                    var isStockUpdated = await _productService.DeductStockAsync(item.ProductId, item.Quantity);
                     if (!isStockUpdated)
                     {
-                        await session.AbortTransactionAsync();
                         return StatusCode(400, new APIResponse
                         {
                             Status = "error",
@@ -81,9 +94,26 @@ namespace LumaShopAPI.Controllers
                             Errors = null
                         });
                     }
-                }
 
-                await session.CommitTransactionAsync();
+                    var remainingStock = await _productService.GetByIdAsync(item.ProductId);
+                    const int minimumStockLimit = 10; // Define the minimum stock limit threshold
+
+                    var vendor = await _userService.GetUserByIdAsync(remainingStock.VendorId);
+                    var deviceToken = vendor.NotificationTargetKey;
+
+                    if (remainingStock.StockQuantity <= minimumStockLimit && !string.IsNullOrEmpty(deviceToken))
+                    {
+                        var messageRequest = new NotificationRequest
+                        {
+                            Title = "Low Stock Alert",
+                            Body = $"The stock for {item.ProductId} is running low!",
+                            DeviceToken = deviceToken,
+                            FirstName = "Admin",
+                            LastName = "User"
+                        };
+                        await _notificationService.SendNotificationAsync(messageRequest);
+                    }
+                }
 
                 return CreatedAtAction(nameof(GetOrderById), new { id = result.Id }, new APIResponse
                 {

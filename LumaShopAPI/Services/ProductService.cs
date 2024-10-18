@@ -73,20 +73,15 @@ namespace LumaShopAPI.Services
         }
 
         // Deduct stock quantity of a product by a specified amount
-        public async Task<bool> DeductStockAsync(string productId, int quantity, IClientSessionHandle session)
+        public async Task<bool> DeductStockAsync(string productId, int quantity)
         {
-            var filter = Builders<Product>.Filter.Eq(p => p.Id, productId);
+            var filter = Builders<Product>.Filter.And(Builders<Product>.Filter.Eq(p => p.Id, productId),Builders<Product>.Filter.Gte(p => p.StockQuantity, quantity));
             var update = Builders<Product>.Update.Inc(p => p.StockQuantity, -quantity);
 
-            var product = await _products.FindOneAndUpdateAsync(session, filter, update, new FindOneAndUpdateOptions<Product>
-            {
-                ReturnDocument = ReturnDocument.After
-            });
+            var result = await _products.UpdateOneAsync(filter, update);
 
-            
-            if (product == null || product.StockQuantity < 0)
+            if (result.ModifiedCount == 0)
             {
-                await _products.FindOneAndUpdateAsync(session, filter, Builders<Product>.Update.Inc(p => p.StockQuantity, quantity));
                 return false;
             }
 
