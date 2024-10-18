@@ -1,5 +1,7 @@
 using AspNetCore.Identity.MongoDbCore.Extensions;
 using AspNetCore.Identity.MongoDbCore.Infrastructure;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using LumaShopAPI.Entities;
 using LumaShopAPI.Services;
 using LumaShopAPI.Services.Database;
@@ -91,10 +93,16 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<VendorRatingService>();
 builder.Services.AddScoped<ShoppingCartService>();
+builder.Services.AddScoped<NotificationService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "lumashop-3ee99-firebase-adminsdk-s2um8-b53bb554f0.json")),
+});
 
 using (var scope = app.Services.CreateScope())
 {

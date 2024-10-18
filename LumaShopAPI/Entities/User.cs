@@ -32,6 +32,9 @@ namespace LumaShopAPI.Entities
 
         [BsonRequired, BsonElement("status"), BsonRepresentation(BsonType.Int32)]
         public UserStatusEnum Status { get; set; } = UserStatusEnum.PENDING;
+
+        [BsonElement("notficationTargetKey")]
+        public string? NotificationTargetKey { get; set; } = null;
     }
 }
 
