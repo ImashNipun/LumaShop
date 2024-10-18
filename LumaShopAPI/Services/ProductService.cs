@@ -88,5 +88,17 @@ namespace LumaShopAPI.Services
             return true;
         }
 
+
+        // Get all products from the database
+        public async Task<List<Product>> GetAllProductsByVendorIdAsync(string vendorId)
+        {
+            return await _products.Find(product => product.VendorId == vendorId).ToListAsync();
+        }
+
+        public async Task<List<Product>> GetAllProductAsync()
+        {
+            return await _products.Find(product => true).ToListAsync();
+        }
+
     }
 }
