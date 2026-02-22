@@ -7,6 +7,7 @@
  */
 
 
+using FirebaseAdmin.Messaging;
 using LumaShopAPI.DTOModals.Common;
 using LumaShopAPI.DTOModals.Notification;
 using LumaShopAPI.DTOModals.Order;
@@ -95,23 +96,25 @@ namespace LumaShopAPI.Controllers
                         });
                     }
 
-                    var remainingStock = await _productService.GetByIdAsync(item.ProductId);
+                    var remainingStock = await _productService.GetByIdAsync(item.ProductId.ToString());
                     const int minimumStockLimit = 10; // Define the minimum stock limit threshold
-
-                    var vendor = await _userService.GetUserByIdAsync(remainingStock.VendorId);
-                    var deviceToken = vendor.NotificationTargetKey;
-
-                    if (remainingStock.StockQuantity <= minimumStockLimit && !string.IsNullOrEmpty(deviceToken))
+                    if (remainingStock != null)
                     {
-                        var messageRequest = new NotificationRequest
+                        var vendor = await _userService.GetUserByIdAsync(remainingStock.VendorId);
+                        var deviceToken = vendor.NotificationTargetKey;
+
+                        if (remainingStock.StockQuantity <= minimumStockLimit && !string.IsNullOrEmpty(deviceToken))
                         {
-                            Title = "Low Stock Alert",
-                            Body = $"The stock for {item.ProductId} is running low!",
-                            DeviceToken = deviceToken,
-                            FirstName = "Admin",
-                            LastName = "User"
-                        };
-                        await _notificationService.SendNotificationAsync(messageRequest);
+                            var messageRequest = new NotificationRequest
+                            {
+                                Title = "Low Stock Alert",
+                                Body = $"The stock for {item.ProductId} is running low!",
+                                DeviceToken = deviceToken,
+                                FirstName = "Admin",
+                                LastName = "User"
+                            };
+                            await _notificationService.SendNotificationAsync(messageRequest);
+                        }
                     }
                 }
 

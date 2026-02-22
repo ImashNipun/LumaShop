@@ -10,5 +10,6 @@ namespace LumaShopAPI.DTOModals.User
         public string Email { get; set; } = string.Empty;
         [Required, DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
+        public string? NotificationTargetKey { get; set; } = null;
     }
 }

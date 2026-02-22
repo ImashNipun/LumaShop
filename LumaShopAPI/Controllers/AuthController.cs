@@ -30,16 +30,18 @@ namespace LumaShopAPI.Controllers
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<UserRoles> _roleManager;
         private readonly IConfiguration _configuration;
+        private readonly UserService _userService;
 
         /*
          * Constructor for AuthController that initializes the user manager, role manager, and configuration settings.
          * Accepts instances of UserManager, RoleManager, and IConfiguration as parameters to facilitate user and role management.
          */
-        public AuthController(UserManager<User> userManager, RoleManager<UserRoles> roleManager, IConfiguration configuration)
+        public AuthController(UserManager<User> userManager, RoleManager<UserRoles> roleManager, IConfiguration configuration, UserService userService)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+            _userService = userService;
         }
 
 
@@ -170,6 +172,12 @@ namespace LumaShopAPI.Controllers
                 if (user.Status == UserStatusEnum.INACTIVE) return new LoginResponse { Message = "Your account is inactive. Please contact support for assistance.", Success = false };
                 if (user.Status == UserStatusEnum.PENDING) return new LoginResponse { Message = "Your account is pending activation. Please check your email for further instructions.", Success = false };
 
+
+                if (!string.IsNullOrEmpty(request.NotificationTargetKey))
+                {
+                    user.NotificationTargetKey = request.NotificationTargetKey;
+                    await _userService.UpdateUserAsync(user.Id.ToString(), user);
+                }
                 //all is well if ew reach here
                 var claims = new List<Claim>
             {
